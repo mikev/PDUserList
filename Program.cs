@@ -58,7 +58,7 @@ namespace PDUserList
         public string html_url { get; set; }
     }
 
-    public class OneUser
+    public class UserReply
     {
         public User user { get; set; }
     }
@@ -99,7 +99,7 @@ namespace PDUserList
 
             // Initialize dotNet Http client
             client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Add("User-Agent", ".NET Foundation UserList Reporter");
+            client.DefaultRequestHeaders.Add("User-Agent", "PDUserList.exe");
             client.DefaultRequestHeaders.Add("Accept", "application/vnd.pagerduty+json;version=2");
             client.DefaultRequestHeaders.Add("Authorization", "Token token=y_NbAkKc66ryYTWUXYEu");
 
@@ -226,7 +226,7 @@ namespace PDUserList
             //StreamReader reader = new StreamReader(streamTask);
             //string text = reader.ReadToEnd();
 
-            var oneUser = await JsonSerializer.DeserializeAsync<OneUser>(await streamTask);
+            var oneUser = await JsonSerializer.DeserializeAsync<UserReply>(await streamTask);
             return oneUser.user;
         }
     }
