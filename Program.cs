@@ -23,7 +23,7 @@ namespace PDUserList
         public string type { get; set; }
         public string summary { get; set; }
         public string self { get; set; }
-        public object html_url { get; set; }
+        public string html_url { get; set; }
     }
 
     public class NotificationRule
@@ -32,7 +32,7 @@ namespace PDUserList
         public string type { get; set; }
         public string summary { get; set; }
         public string self { get; set; }
-        public object html_url { get; set; }
+        public string html_url { get; set; }
     }
 
     public class User
@@ -120,7 +120,7 @@ namespace PDUserList
                 }
                 else  // Code of the console application when there is no argument
                 {
-                    var userList = ProcessUserLoop();
+                    var userList = ProcessUserListingLoop();
 
                     await PrintUserList(userList);
                 }
@@ -140,6 +140,7 @@ namespace PDUserList
                 app.ShowHelp();
             }
 
+            await Task.Yield();
             return 0;
         }
 
@@ -176,7 +177,7 @@ namespace PDUserList
         /// Implemented as chained asynchronous flow
         /// </summary>
         /// <returns>List of users</returns>
-        private static async IAsyncEnumerable<User> ProcessUserLoop()
+        private static async IAsyncEnumerable<User> ProcessUserListingLoop()
         {
             int offset = 0;
             int limit = 10;
