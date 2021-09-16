@@ -44,9 +44,9 @@ namespace PDUserList
         public string avatar_url { get; set; }
         public bool billed { get; set; }
         public string role { get; set; }
-        public object description { get; set; }
+        public string description { get; set; }
         public bool invitation_sent { get; set; }
-        public object job_title { get; set; }
+        public string job_title { get; set; }
         public List<Team> teams { get; set; }
         public List<ContactMethod> contact_methods { get; set; }
         public List<NotificationRule> notification_rules { get; set; }
@@ -63,7 +63,7 @@ namespace PDUserList
         public User user { get; set; }
     }
 
-    public class UserReplyList
+    public class UserListReply
     {
         public List<User> users { get; set; }
         public int limit { get; set; }
@@ -203,12 +203,12 @@ namespace PDUserList
         /// <param name="offset">The starting offset</param>
         /// <param name="limit">Maximum count of users to retrieve</param>
         /// <returns></returns>
-        private static async Task<UserReplyList> GetUserList(int offset, int limit)
+        private static async Task<UserListReply> GetUserList(int offset, int limit)
         {
             var queryRequest = $"https://api.pagerduty.com/users?total=true&offset={offset}&limit={limit}";
 
             var streamTask = client.GetStreamAsync(queryRequest);
-            var userReplyList = await JsonSerializer.DeserializeAsync<UserReplyList>(await streamTask);
+            var userReplyList = await JsonSerializer.DeserializeAsync<UserListReply>(await streamTask);
             return userReplyList;
         }
 
