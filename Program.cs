@@ -92,15 +92,12 @@ namespace PDUserList
             app.HelpOption("-?|-h|--help");
             app.VersionOption("--version", "1.0.0");
 
-            // The first argument is the option template.
-            // It starts with a pipe-delimited list of option flags/names to use
-            // Optionally, It is then followed by a space and a short description of the value to specify.
-            // e.g. here we could also just use "-o|--option"
+            // User option, e.g. -user PG7TXJ8
             var userOption = app.Option("-u|--user <optionvalue>",
                     "Some option value",
                     CommandOptionType.SingleValue);
 
-            // Initialize Http client
+            // Initialize dotNet Http client
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Add("User-Agent", ".NET Foundation UserList Reporter");
             client.DefaultRequestHeaders.Add("Accept", "application/vnd.pagerduty+json;version=2");
@@ -109,7 +106,7 @@ namespace PDUserList
             //Develop Debug logic
             //var user0 = await GetUser("PG7TXJ8");
 
-            // Declare CLI option handlers
+            // Declare dotNet CLI option handlers
             app.OnExecute(async () =>
             {
                 // Check if the user option was specified
@@ -146,6 +143,11 @@ namespace PDUserList
             return 0;
         }
 
+        /// <summary>
+        /// Print PagerDuty User List to console
+        /// </summary>
+        /// <param name="userList"></param>
+        /// <returns></returns>
         private static async Task PrintUserList(IAsyncEnumerable<User> userList)
         {
             await foreach (var user in userList)
@@ -154,6 +156,10 @@ namespace PDUserList
             }
         }
 
+        /// <summary>
+        /// Print PagerDuty User to console
+        /// </summary>
+        /// <param name="user"></param>
         private static void PrintUser(User user)
         {
             Console.WriteLine($"{user.id} {user.name}");
@@ -165,6 +171,11 @@ namespace PDUserList
             Console.WriteLine();
         }
 
+        /// <summary>
+        /// Process loop for intermediate calls to PagerDuty User List API
+        /// Implemented as chained asynchronous flow
+        /// </summary>
+        /// <returns>List of users</returns>
         private static async IAsyncEnumerable<User> ProcessUserLoop()
         {
             int offset = 0;
@@ -185,6 +196,12 @@ namespace PDUserList
             }
         }
 
+        /// <summary>
+        /// Retrieve a partial list of PagerDuty API Users
+        /// </summary>
+        /// <param name="offset">The starting offset</param>
+        /// <param name="limit">Maximum count of users to retrieve</param>
+        /// <returns></returns>
         private static async Task<UserReplyList> GetUserList(int offset, int limit)
         {
             var queryRequest = $"https://api.pagerduty.com/users?total=true&offset={offset}&limit={limit}";
@@ -194,6 +211,11 @@ namespace PDUserList
             return userReplyList;
         }
 
+        /// <summary>
+        /// Retrieve User data from the PagerDuty API
+        /// </summary>
+        /// <param name="key">The user's ID</param>
+        /// <returns>An instance of the User if found; otherwise throws error</returns>
         private static async Task<User> GetUser(string key)
         {
             var queryRequest = $"https://api.pagerduty.com/users/{key}";
