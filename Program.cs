@@ -79,7 +79,7 @@ namespace PDUserList
 
         static async Task<int> Main(string[] args)
         {
-            // Description of the application
+            // Description of the CLI application
             var app = new CommandLineApplication()
             {
                 Name = "PDUserList.exe",
@@ -106,7 +106,8 @@ namespace PDUserList
             client.DefaultRequestHeaders.Add("Accept", "application/vnd.pagerduty+json;version=2");
             client.DefaultRequestHeaders.Add("Authorization", "Token token=y_NbAkKc66ryYTWUXYEu");
 
-            var user0 = await GetUser("PG7TXJ8");
+            //Debug
+            //var user0 = await GetUser("PG7TXJ8");
 
             // Code of the console application when there is no argument
             app.OnExecute(async () =>
@@ -117,22 +118,14 @@ namespace PDUserList
                     Console.WriteLine("User details, key: {0}", userOption.Value());
 
                     var user = await GetUser(userOption.Value());
-                    Console.WriteLine($"{user.name}");
 
-                    foreach(var contactMethod in user.contact_methods)
-                    {
-                        Console.WriteLine($"{contactMethod.id} {contactMethod.type}");
-                    }
-                    Console.WriteLine();
+                    PrintUser(user);
                 }
                 else
                 {
                     var userList = ProcessUserLoop();
 
-                    await foreach(var user in userList)
-                    {
-                        Console.WriteLine($"{user.id} {user.name}");
-                    }
+                    await PrintUserList(userList);
                 }
 
                 return 0;
@@ -153,13 +146,32 @@ namespace PDUserList
             return 0;
         }
 
+        private static async Task PrintUserList(IAsyncEnumerable<User> userList)
+        {
+            await foreach (var user in userList)
+            {
+                Console.WriteLine($"{user.id} {user.name}");
+            }
+        }
+
+        private static void PrintUser(User user)
+        {
+            Console.WriteLine($"{user.id} {user.name}");
+
+            foreach (var contactMethod in user.contact_methods)
+            {
+                Console.WriteLine($"{contactMethod.id} {contactMethod.type}");
+            }
+            Console.WriteLine();
+        }
+
         private static async IAsyncEnumerable<User> ProcessUserLoop()
         {
             int offset = 0;
             int limit = 10;
             while (true)
             {
-                var userReplyList = await ProcessUserList(offset, limit);
+                var userReplyList = await GetUserList(offset, limit);
 
                 foreach (var user in userReplyList.users)
                 {
@@ -173,13 +185,13 @@ namespace PDUserList
             }
         }
 
-        private static async Task<UserReplyList> ProcessUserList(int offset, int limit)
+        private static async Task<UserReplyList> GetUserList(int offset, int limit)
         {
             var queryRequest = $"https://api.pagerduty.com/users?total=true&offset={offset}&limit={limit}";
 
             var streamTask = client.GetStreamAsync(queryRequest);
-            var repositories = await JsonSerializer.DeserializeAsync<UserReplyList>(await streamTask);
-            return repositories;
+            var userReplyList = await JsonSerializer.DeserializeAsync<UserReplyList>(await streamTask);
+            return userReplyList;
         }
 
         private static async Task<User> GetUser(string key)
@@ -188,6 +200,7 @@ namespace PDUserList
 
             var streamTask = client.GetStreamAsync(queryRequest);
 
+            //Debug
             //StreamReader reader = new StreamReader(streamTask);
             //string text = reader.ReadToEnd();
 
