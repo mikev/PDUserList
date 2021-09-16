@@ -100,19 +100,19 @@ namespace PDUserList
                     "Some option value",
                     CommandOptionType.SingleValue);
 
+            // Initialize Http client
             client.DefaultRequestHeaders.Accept.Clear();
-
             client.DefaultRequestHeaders.Add("User-Agent", ".NET Foundation UserList Reporter");
             client.DefaultRequestHeaders.Add("Accept", "application/vnd.pagerduty+json;version=2");
             client.DefaultRequestHeaders.Add("Authorization", "Token token=y_NbAkKc66ryYTWUXYEu");
 
-            //Debug
+            //Develop Debug logic
             //var user0 = await GetUser("PG7TXJ8");
 
-            // Code of the console application when there is no argument
+            // Declare CLI option handlers
             app.OnExecute(async () =>
             {
-                // Use the HasValue() method to check if the option was specified
+                // Check if the user option was specified
                 if (userOption.HasValue())
                 {
                     Console.WriteLine("User details, key: {0}", userOption.Value());
@@ -121,7 +121,7 @@ namespace PDUserList
 
                     PrintUser(user);
                 }
-                else
+                else  // Code of the console application when there is no argument
                 {
                     var userList = ProcessUserLoop();
 
@@ -131,7 +131,7 @@ namespace PDUserList
                 return 0;
             });
 
-            // Parse the command line and execute the right code
+            // Parse the command line and execute commands
             try
             {
                 app.Execute(args);
@@ -200,7 +200,7 @@ namespace PDUserList
 
             var streamTask = client.GetStreamAsync(queryRequest);
 
-            //Debug
+            //Develop debug logic
             //StreamReader reader = new StreamReader(streamTask);
             //string text = reader.ReadToEnd();
 
