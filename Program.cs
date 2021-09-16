@@ -82,9 +82,9 @@ namespace PDUserList
             // Description of the application
             var app = new CommandLineApplication()
             {
-                Name = "SampleApp.exe",
-                FullName = "Sample App",
-                Description = "Description of the application"
+                Name = "PDUserList.exe",
+                FullName = "PDUserList",
+                Description = "PagerDuty User AddressBook"
             };
 
             // Handle help and version arguments
@@ -96,7 +96,7 @@ namespace PDUserList
             // It starts with a pipe-delimited list of option flags/names to use
             // Optionally, It is then followed by a space and a short description of the value to specify.
             // e.g. here we could also just use "-o|--option"
-            var basicOption = app.Option("-u|--user <optionvalue>",
+            var userOption = app.Option("-u|--user <optionvalue>",
                     "Some option value",
                     CommandOptionType.SingleValue);
 
@@ -106,23 +106,23 @@ namespace PDUserList
             client.DefaultRequestHeaders.Add("Accept", "application/vnd.pagerduty+json;version=2");
             client.DefaultRequestHeaders.Add("Authorization", "Token token=y_NbAkKc66ryYTWUXYEu");
 
-            //var user0 = await GetUser("PJ29Q1C");
+            var user0 = await GetUser("PG7TXJ8");
 
             // Code of the console application when there is no argument
             app.OnExecute(async () =>
             {
                 // Use the HasValue() method to check if the option was specified
-                if (basicOption.HasValue())
+                if (userOption.HasValue())
                 {
-                    Console.WriteLine("User details, key: {0}", basicOption.Value());
+                    Console.WriteLine("User details, key: {0}", userOption.Value());
 
-                    var user = await GetUser(basicOption.Value());
-
+                    var user = await GetUser(userOption.Value());
                     Console.WriteLine($"{user.name}");
-                    //foreach(var contactMethod in user.contact_methods)
-                    //{
-                    //    Console.WriteLine($"{contactMethod.summary}");
-                    //}
+
+                    foreach(var contactMethod in user.contact_methods)
+                    {
+                        Console.WriteLine($"{contactMethod.id} {contactMethod.type}");
+                    }
                     Console.WriteLine();
                 }
                 else
